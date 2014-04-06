@@ -23,8 +23,8 @@ var myPanel = {
 		var go_btn = document.createElement("input");
 
 		inputbox.value = 1;
-		inputbox.min = 1;
-		inputbox.max = 1000;
+		inputbox.min = MIN_INPUT_VALUE;
+		inputbox.max = MAX_INPUT_VALUE;
 
 		go_btn.type = "button";
 		go_btn.value = "<< Run Query >>";
