@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  
+  "name": "pixiv-filter",
+  "description": "filt the query results by bookmark-counts",
+  "version": "1.0",
+
+  "permissions": [ "tabs", "http://*/", "https://*/" ],
+  "content_scripts": [
+    {
+      "matches": ["*://www.pixiv.net/search.php?*"],
+      "js": ["pixiv.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
