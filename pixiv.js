@@ -134,7 +134,7 @@ function preparePage (requested_pagenum) {
 	// var frag = document.createDocumentFragment();
 
 
-	var container = document.getElementsByClassName("image-items")[0];
+	var container = document.getElementsByClassName("_image-items")[0];
 	container.innerHTML = "";
 	console.log(container.childNodes.length);
 
