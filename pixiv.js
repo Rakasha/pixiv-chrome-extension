@@ -154,6 +154,15 @@ function preparePage (requested_pagenum) {
 	return requested_pagenum;
 }
 
+function extractBookmarkCountFromImageItem(image_item) {
+	var count_link = image_item.getElementsByClassName("bookmark-count")[0];
+	var text_num;
+	if (count_link) {
+		return Number(count_link.textContent);
+	} else {
+		return 0;
+	}
+}
 
 function getPixivPage (pixiv_page_number, thresh, container) {
 	var newurl = document.URL + "&p=" + pixiv_page_number;
@@ -177,13 +186,12 @@ function getPixivPage (pixiv_page_number, thresh, container) {
 		QUERY_END_FLAG = true;
 	}
 
+	var bookmark_count = 0;
 	for (var i = 0; i < items.length; i++) {
-		if (items[i].childNodes.length === 3) {
-			// if the image has been bookmarked by some users
-			var num = Number(items[i].childNodes[2].firstChild.firstChild.textContent);
-			if (num >= thresh) {
-				container.appendChild(items[i]);
-			}
+		bookmark_count = extractBookmarkCountFromImageItem(items[i]);
+
+		if (bookmark_count >= thresh) {
+			container.appendChild(items[i]);
 		}
 	}
 	return pixiv_page_number;
