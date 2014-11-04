@@ -8,6 +8,15 @@ var pixiv_page_number = 0;
 var THRESHOLD;
 var MAX_INPUT_VALUE = 1000;
 var MIN_INPUT_VALUE = 1;
+var intID;
+
+var _progressBar = document.createElement("progress");
+_progressBar.style.width = "100%";
+_progressBar.style.height = "5px";
+_progressBar.value = 100;
+_progressBar.max = 100;
+document.body.insertBefore(_progressBar, document.body.firstChild);
+
 
 var myPanel = {
 	init: function () {
@@ -96,6 +105,8 @@ var myPanel = {
 
 function startFiltering () {
 
+
+
 	// Sanity check of user input value
 	var user_input = myPanel.inputbox.value;
 	if (isNaN(user_input)) {
@@ -110,8 +121,11 @@ function startFiltering () {
 
 	myPanel.inputbox.value = user_input;
 
-	document.body.scrollTop = document.documentElement.scrollTop = 0;
 	myPanel.setButtonText("Processing...");
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+	// reset the progress bar
+	_progressBar.max = MAX_ALLOWED;
+	_progressBar.value = 0;
 	myPanel.setDisabledFlag(true);
 
 	// Let the rendering thread catchup and draw the text 
@@ -128,6 +142,10 @@ function produceNewPage () {
 	pixiv_page_number = preparePage(pixiv_page_number);
 }
 
+function doNothing() {
+
+}
+
 function preparePage (requested_pagenum) {
 	console.log("in preparePage()");
 	myPanel.go_btn.value = "requesting ....images....";
@@ -138,19 +156,10 @@ function preparePage (requested_pagenum) {
 	container.innerHTML = "";
 	console.log(container.childNodes.length);
 
-	while (container.childNodes.length < MAX_ALLOWED && QUERY_END_FLAG === false) {
+	intID = setInterval(function () {
 		requested_pagenum = getPixivPage(requested_pagenum+1, THRESHOLD, container);
-		console.log("container size :" + container.childNodes.length);
-	}
+	}, 20);
 
-	if (QUERY_END_FLAG === true) {
-		myPanel.setDisabledFlag(true);
-		myPanel.setButtonText("----end of query---");
-		
-	} else {
-		myPanel.setDisabledFlag(false);
-		myPanel.setButtonText(" Next Page >>>>>>>>> ");
-	}
 	return requested_pagenum;
 }
 
@@ -165,6 +174,17 @@ function extractBookmarkCountFromImageItem(image_item) {
 }
 
 function getPixivPage (pixiv_page_number, thresh, container) {
+	if ((container.childNodes.length >= MAX_ALLOWED) || (QUERY_END_FLAG === true)) {
+		clearInterval(intID);
+		if (QUERY_END_FLAG === true) {
+			myPanel.setDisabledFlag(true);
+			myPanel.setButtonText("----end of query---");
+		} else {
+			myPanel.setDisabledFlag(false);
+			myPanel.setButtonText(" Next Page >>>>>>>>> ");
+		}
+	}
+
 	var newurl = document.URL + "&p=" + pixiv_page_number;
 	console.log("requesting page # " + pixiv_page_number);
 
@@ -192,10 +212,12 @@ function getPixivPage (pixiv_page_number, thresh, container) {
 
 		if (bookmark_count >= thresh) {
 			container.appendChild(items[i]);
+			_progressBar.value += 1;
 		}
 	}
 	return pixiv_page_number;
 }
+
 
 myPanel.init();
 
