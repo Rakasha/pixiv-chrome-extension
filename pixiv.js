@@ -157,8 +157,8 @@ function preparePage (requested_pagenum) {
 	console.log(container.childNodes.length);
 
 	intID = setInterval(function () {
-		getPixivPage(requested_pagenum, THRESHOLD, container);
 		requested_pagenum += 1;
+		getPixivPage(requested_pagenum, THRESHOLD, container);
 	}, 20);
 	return requested_pagenum;
 }
